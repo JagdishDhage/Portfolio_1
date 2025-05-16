@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import img from '../../assets/about.jpg'
+import { Link } from 'react-router-dom';
 function ParticlesBackground() {
   const canvasRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -164,7 +165,7 @@ function ProfileCard() {
           </div>
           
           {/* Profile Info */}
-          <h2 className="text-2xl font-bold text-white mb-2">John Doe</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">Jagdish Dhage</h2>
           <p className="text-indigo-300 text-sm font-medium tracking-wide uppercase mb-4">Full Stack Developer</p>
           
           {/* Divider */}
@@ -176,6 +177,7 @@ function ProfileCard() {
           </p>
           
           {/* Contact Button */}
+          <Link to='https://www.linkedin.com/in/jagdish-dhage-37080232a/'>
           <button className="group bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium py-3 px-8 rounded-lg transition duration-300 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 flex items-center gap-2">
             <span>Connect</span>
             <svg 
@@ -187,6 +189,7 @@ function ProfileCard() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14m-7-7 7 7-7 7" />
             </svg>
           </button>
+          </Link>
           
           {/* Social Media Icons */}
           <div className="flex space-x-5 mt-8">

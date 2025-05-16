@@ -179,7 +179,7 @@ function Contact() {
                 <h4 className="text-gray-300 font-medium mb-4">Connect With Me</h4>
                 <div className="flex space-x-4">
                   <a 
-                    href="#" 
+                    href="https://www.linkedin.com/in/jagdish-dhage-37080232a/" 
                     className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 hover:bg-indigo-500/40 transition-colors"
                     aria-label="LinkedIn"
                   >
@@ -190,7 +190,7 @@ function Contact() {
                     </svg>
                   </a>
                   <a 
-                    href="#" 
+                    href="https://github.com/JagdishDhage" 
                     className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 hover:bg-indigo-500/40 transition-colors"
                     aria-label="GitHub"
                   >
@@ -199,7 +199,7 @@ function Contact() {
                     </svg>
                   </a>
                   <a 
-                    href="#" 
+                    href="https://x.com/DhageDev002" 
                     className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 hover:bg-indigo-500/40 transition-colors"
                     aria-label="Twitter"
                   >
