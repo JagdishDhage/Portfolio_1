@@ -4,6 +4,7 @@ import { ChevronRight, ExternalLink, Code, Layers } from "lucide-react";
 import thevoice from '../../../assets/thevoice.png'
 import fiteat from '../../../assets/fiteat.png'
 import notes from '../../../assets/notes.png'
+
 const projects = [
   {
     title: "Crime Reporting Web Portal",
@@ -56,7 +57,23 @@ function Projects() {
   const [visibleProjects, setVisibleProjects] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -113,21 +130,31 @@ function Projects() {
   const backgroundY = useTransform(scrollY, [0, 500], [0, -50]);
   const opacityTransform = useTransform(scrollY, [0, 200], [0.6, 0.9]);
 
+  // Mobile selector for active project
+  const handleMobileProjectSelect = (index) => {
+    setActiveIndex(index);
+    // Scroll to the selected project description
+    const descriptionElement = document.getElementById(`project-description-${index}`);
+    if (descriptionElement) {
+      descriptionElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="min-w-6xl mx-auto px-6 mt-20 relative overflow-hidden">
+    <div className="w-full mx-auto px-4 sm:px-6 mt-10 sm:mt-20 relative overflow-hidden">
       {/* Animated background elements */}
       <motion.div 
         className="absolute inset-0 -z-10 opacity-60"
         style={{ y: backgroundY }}
       >
-        <div className="absolute top-20 left-10 w-64 h-64 rounded-full  bg-purple-600/20 blur-3xl" />
+        <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-purple-600/20 blur-3xl" />
         <div className="absolute top-40 right-20 w-80 h-80 rounded-full bg-blue-600/20 blur-3xl" />
         <div className="absolute bottom-20 left-40 w-72 h-72 rounded-full bg-indigo-600/20 blur-3xl" />
       </motion.div>
 
-      <div className="text-center mb-16 relative">
+      <div className="text-center mb-10 sm:mb-16 relative">
         <motion.div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full  blur-xl -z-10"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full blur-xl -z-10"
           animate={{ 
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.5, 0.3]
@@ -136,7 +163,7 @@ function Projects() {
         />
       
         <motion.h2 
-          className="text-3xl md:text-5xl font-extrabold text-white mb-4 relative"
+          className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white mb-4 relative"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
@@ -146,7 +173,7 @@ function Projects() {
           </span>
         </motion.h2>
         <motion.p 
-          className="max-w-2xl mx-auto text-gray-300 text-lg"
+          className="max-w-2xl mx-auto text-gray-300 text-base sm:text-lg px-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -155,21 +182,51 @@ function Projects() {
         </motion.p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      {/* Mobile Project Tabs */}
+      {isMobile && (
+        <div className="mb-8 overflow-x-auto flex no-scrollbar pb-2">
+          <div className="flex space-x-2 px-1">
+            {projects.map((project, index) => (
+              <motion.button
+                key={`tab-${index}`}
+                className={`px-4 py-2 whitespace-nowrap rounded-full text-sm font-medium transition-all ${
+                  activeIndex === index 
+                    ? `bg-gradient-to-r ${project.color} text-white` 
+                    : 'bg-white/10 text-white/70'
+                }`}
+                onClick={() => handleMobileProjectSelect(index)}
+                whileTap={{ scale: 0.95 }}
+              >
+                {project.title}
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         
+        {/* Project Images Section - Hidden on mobile when not at the top */}
         <div 
           ref={containerRef}
-          className="h-[500px] overflow-y-auto space-y-16 pr-4 relative scroll-container"
+          className={`${isMobile ? 'h-[300px]' : 'h-[500px]'} overflow-y-auto space-y-10 sm:space-y-16 pr-2 sm:pr-4 relative scroll-container`}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           <style jsx>{`
             .scroll-container::-webkit-scrollbar {
               display: none;
             }
+            .no-scrollbar::-webkit-scrollbar {
+              display: none;
+            }
+            .no-scrollbar {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
           `}</style>
           
           <motion.div 
-            className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black to-transparent p-10 z-10 pointer-events-none"
+            className="absolute inset-x-0 top-0 h-12 sm:h-16 bg-gradient-to-b from-black to-transparent p-4 sm:p-10 z-10 pointer-events-none"
             style={{ opacity: useTransform(scrollY, [0, 50], [1, 0.5]) }}
           />
         
@@ -187,9 +244,10 @@ function Projects() {
               transition={{ duration: 0.5 }}
               onHoverStart={() => setHoveredIndex(index)}
               onHoverEnd={() => setHoveredIndex(null)}
+              onClick={() => isMobile && handleMobileProjectSelect(index)}
             >
               <motion.div 
-                className={`absolute inset-0 rounded-2xl transition-all duration-300 z-10`}
+                className={`absolute inset-0 rounded-xl sm:rounded-2xl transition-all duration-300 z-10`}
                 animate={{
                   boxShadow: activeIndex === index 
                     ? '0 0 0 2px rgba(99, 102, 241, 0.8), 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)'
@@ -200,9 +258,9 @@ function Projects() {
               
               {/* Background gradient overlay */}
               <motion.div 
-                className={`absolute inset-0 bg-gradient-to-tr ${project.color} rounded-2xl  opacity-0`}
+                className={`absolute inset-0 bg-gradient-to-tr ${project.color} rounded-xl sm:rounded-2xl opacity-0`}
                 animate={{ 
-                  opacity: hoveredIndex === index ? 0.15 : 0
+                  opacity: hoveredIndex === index || (isMobile && activeIndex === index) ? 0.15 : 0
                 }}
                 transition={{ duration: 0.3 }}
               />
@@ -210,22 +268,21 @@ function Projects() {
               <img
                 src={project.image}
                 alt={project.title}
-                className="project-image w-full h-[28rem] object-cover rounded-2xl transition-all duration-500"
+                className="project-image w-full h-[200px] sm:h-[28rem] object-cover rounded-xl sm:rounded-2xl transition-all duration-500"
               />
               
-              
               <motion.div 
-                className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-5 rounded-b-2xl"
+                className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-3 sm:p-5 rounded-b-xl sm:rounded-b-2xl"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ 
                   y: visibleProjects.includes(index) ? 0 : 20, 
                   opacity: visibleProjects.includes(index) ? 1 : 0,
-                  height: hoveredIndex === index ? "50%" : "35%"
+                  height: hoveredIndex === index ? "50%" : isMobile ? "40%" : "35%"
                 }}
                 transition={{ duration: 0.4 }}
               >
                 <motion.p 
-                  className="text-white font-medium text-xl mb-2"
+                  className="text-white font-medium text-base sm:text-xl mb-1 sm:mb-2"
                   animate={{
                     scale: activeIndex === index ? 1.05 : 1
                   }}
@@ -234,9 +291,9 @@ function Projects() {
                   {project.title}
                 </motion.p>
                 
-                {/* Tags */}
+                {/* Tags - Limit to 3 on mobile */}
                 <motion.div 
-                  className="flex flex-wrap gap-2 mt-2"
+                  className="flex flex-wrap gap-1 sm:gap-2 mt-1 sm:mt-2"
                   initial={{ opacity: 0 }}
                   animate={{ 
                     opacity: visibleProjects.includes(index) ? 1 : 0,
@@ -244,7 +301,7 @@ function Projects() {
                   }}
                   transition={{ duration: 0.3, delay: 0.1 }}
                 >
-                  {project.tags.map((tag, tagIndex) => (
+                  {project.tags.slice(0, isMobile ? 3 : project.tags.length).map((tag, tagIndex) => (
                     <span 
                       key={tagIndex} 
                       className="px-2 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs font-medium text-white/80"
@@ -252,35 +309,40 @@ function Projects() {
                       {tag}
                     </span>
                   ))}
+                  {isMobile && project.tags.length > 3 && (
+                    <span className="px-2 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs font-medium text-white/80">
+                      +{project.tags.length - 3}
+                    </span>
+                  )}
                 </motion.div>
               </motion.div>
               
               {/* Interaction indicator */}
               <motion.div
-                className="absolute top-4 right-4 bg-white/10 backdrop-blur-md rounded-full p-2"
+                className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-white/10 backdrop-blur-md rounded-full p-1 sm:p-2"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ 
-                  opacity: hoveredIndex === index ? 1 : 0,
-                  scale: hoveredIndex === index ? 1 : 0.8,
-                  rotate: hoveredIndex === index ? 0 : -20
+                  opacity: hoveredIndex === index || (isMobile && activeIndex === index) ? 1 : 0,
+                  scale: hoveredIndex === index || (isMobile && activeIndex === index) ? 1 : 0.8,
+                  rotate: hoveredIndex === index || (isMobile && activeIndex === index) ? 0 : -20
                 }}
                 transition={{ duration: 0.2 }}
               >
-                <ExternalLink size={16} className="text-white" />
+                <ExternalLink size={isMobile ? 14 : 16} className="text-white" />
               </motion.div>
             </motion.div>
           ))}
           
           <motion.div 
-            className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black to-transparent z-10 pointer-events-none"
+            className="absolute inset-x-0 bottom-0 h-12 sm:h-16 bg-gradient-to-t from-black to-transparent z-10 pointer-events-none"
             style={{ opacity: useTransform(scrollY, [0, 50], [1, 0.5]) }}
           />
         </div>
 
         {/* Dynamic Description with enhanced animations */}
-        <div className="flex flex-col justify-center items-start space-y-6 sticky top-24">
+        <div className="flex flex-col justify-center items-start space-y-4 sm:space-y-6 md:sticky md:top-24">
           <motion.div 
-            className="relative px-5 py-2 rounded-full overflow-hidden"
+            className="relative px-3 sm:px-5 py-1 sm:py-2 rounded-full overflow-hidden"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7 }}
@@ -296,11 +358,11 @@ function Projects() {
               }}
               transition={{ duration: 3, repeat: Infinity }}
             />
-            <span className="text-indigo-300 text-lg font-medium flex items-center">
+            <span className="text-indigo-300 text-sm sm:text-lg font-medium flex items-center">
               <motion.span 
                 animate={{ opacity: [0.7, 1, 0.7] }} 
                 transition={{ duration: 2, repeat: Infinity }}
-                className="mr-2"
+                className="mr-1 sm:mr-2"
               >
                 Featured Project
               </motion.span>
@@ -308,7 +370,7 @@ function Projects() {
                 animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
               >
-                <ChevronRight size={18} />
+                <ChevronRight size={isMobile ? 16 : 18} />
               </motion.div>
             </span>
           </motion.div>
@@ -317,6 +379,7 @@ function Projects() {
             {projects.map((project, index) => 
               activeIndex === index && (
                 <motion.div
+                  id={`project-description-${index}`}
                   key={`description-${index}`}
                   initial={{ opacity: 0, y: 20, rotateX: -10 }}
                   animate={{ opacity: 1, y: 0, rotateX: 0 }}
@@ -326,7 +389,7 @@ function Projects() {
                     stiffness: 150, 
                     damping: 20 
                   }}
-                  className="bg-gray-900/40 backdrop-blur-md p-8 rounded-2xl border border-white/5 relative overflow-hidden"
+                  className="bg-gray-900/40 backdrop-blur-md p-4 sm:p-8 rounded-xl sm:rounded-2xl border border-white/5 relative overflow-hidden w-full"
                   style={{ perspective: "1000px" }}
                 >
                   {/* Animated gradient border effect */}
@@ -345,7 +408,7 @@ function Projects() {
                   />
                   
                   <motion.h3 
-                    className="text-3xl font-semibold text-white mb-2 flex items-center gap-3"
+                    className="text-xl sm:text-2xl md:text-3xl font-semibold text-white mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
@@ -358,14 +421,14 @@ function Projects() {
                       }}
                       transition={{ duration: 5, repeat: Infinity, repeatType: "reverse" }}
                     >
-                      {index === 0 && <Code size={24} className="text-purple-400" />}
-                      {index === 1 && <Layers size={24} className="text-emerald-400" />}
-                      {index === 2 && <Code size={24} className="text-rose-400" />}
+                      {index === 0 && <Code size={isMobile ? 18 : 24} className="text-purple-400" />}
+                      {index === 1 && <Layers size={isMobile ? 18 : 24} className="text-emerald-400" />}
+                      {index === 2 && <Code size={isMobile ? 18 : 24} className="text-rose-400" />}
                     </motion.div>
                   </motion.h3>
                   
                   <motion.p 
-                    className="text-indigo-300/70 text-sm mb-4"
+                    className="text-indigo-300/70 text-xs sm:text-sm mb-2 sm:mb-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
@@ -374,7 +437,7 @@ function Projects() {
                   </motion.p>
                   
                   <motion.p 
-                    className="text-white/70 text-lg max-w-lg mb-4"
+                    className="text-white/70 text-sm sm:text-base md:text-lg max-w-lg mb-3 sm:mb-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
@@ -383,7 +446,7 @@ function Projects() {
                   </motion.p>
                   
                   <motion.ul
-                    className="text-white/70 text-md max-w-lg space-y-2 mb-4"
+                    className="text-white/70 text-sm sm:text-base max-w-lg space-y-1 sm:space-y-2 mb-3 sm:mb-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
@@ -396,7 +459,7 @@ function Projects() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: 0.4 + (idx * 0.1) }}
                       >
-                        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="mt-1 mr-2 size-5 shrink-0 fill-purple-600 text-purple-400 bg-purple-600/20 lg:bg-black">
+                        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="mt-1 mr-2 size-4 sm:size-5 shrink-0 fill-purple-600 text-purple-400 bg-purple-600/20 lg:bg-black">
                           <path d="M12 1C12 1 12 8 10 10C8 12 1 12 1 12C1 12 8 12 10 14C12 16 12 23 12 23C12 23 12 16 14 14C16 12 23 12 23 12C23 12 16 12 14 10C12 8 12 1 12 1Z"></path>
                         </svg> 
                         {point}
@@ -405,7 +468,7 @@ function Projects() {
                   </motion.ul>
                   
                   <motion.div 
-                    className="flex flex-wrap gap-2 mt-2 mb-4"
+                    className="flex flex-wrap gap-1 sm:gap-2 mt-2 mb-3 sm:mb-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
@@ -421,13 +484,13 @@ function Projects() {
                   </motion.div>
                   
                   <motion.div 
-                    className="mt-8 flex gap-3"
+                    className="mt-4 sm:mt-8 flex flex-wrap gap-2 sm:gap-3"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                   >
                     <motion.button 
-                      className={`px-4 py-2 bg-gradient-to-r ${project.color} text-white rounded-lg flex items-center gap-2 transition-colors duration-300`}
+                      className={`px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r ${project.color} text-white rounded-lg flex items-center gap-1 sm:gap-2 transition-colors duration-300 text-sm sm:text-base`}
                       whileHover={{ scale: 1.05, boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -436,12 +499,12 @@ function Projects() {
                         animate={{ x: [0, 3, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                       >
-                        <ChevronRight size={16} />
+                        <ChevronRight size={isMobile ? 14 : 16} />
                       </motion.div>
                     </motion.button>
                     
                     <motion.button 
-                      className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center gap-2 transition-colors duration-300"
+                      className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center gap-1 sm:gap-2 transition-colors duration-300 text-sm sm:text-base"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -449,12 +512,12 @@ function Projects() {
                     </motion.button>
                   </motion.div>
                   
-                  {/* Floating particles */}
+                  {/* Floating particles - reduced for mobile */}
                   <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    {[...Array(3)].map((_, i) => (
+                    {[...Array(isMobile ? 2 : 3)].map((_, i) => (
                       <motion.div
                         key={i}
-                        className="absolute w-2 h-2 rounded-full bg-white/20"
+                        className="absolute w-1 sm:w-2 h-1 sm:h-2 rounded-full bg-white/20"
                         initial={{ 
                           x: Math.random() * 300,
                           y: Math.random() * 200, 
@@ -479,19 +542,21 @@ function Projects() {
             )}
           </AnimatePresence>
           
-          {/* Scroll indicator */}
-          <motion.div 
-            className="w-full h-1 bg-gray-800/50 rounded-full mt-6 overflow-hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.8 }}
-          >
+          {/* Scroll indicator - only visible on larger screens */}
+          {!isMobile && (
             <motion.div 
-              className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
-              style={{ width: `${scrollProgress * 100}%` }}
-              transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            />
-          </motion.div>
+              className="w-full h-1 bg-gray-800/50 rounded-full mt-4 sm:mt-6 overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.8 }}
+            >
+              <motion.div 
+                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+                style={{ width: `${scrollProgress * 100}%` }}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+              />
+            </motion.div>
+          )}
         </div>
       </div>
     </div>
