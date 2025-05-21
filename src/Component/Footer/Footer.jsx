@@ -30,7 +30,7 @@ function Footer() {
   const generalLinks = [
     { name: "Home", href: "#" },
     { name: "Projects", href: "#projects" },
-    { name: "Blog", href: "#blog" },
+    { name: "Blog", href: "https://jagdish-blogs.vercel.app/" },
     { name: "About", href: "#about" }
   ];
   
